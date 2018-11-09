@@ -1,7 +1,7 @@
 <?php
 include('config.php');
 include('session.php');
-error_reporting(E_ERROR | E_PARSE);
+//error_reporting(E_ERROR | E_PARSE);
 if(isset($_GET['logout'])){
 	session_destroy();
 	header("location: index.php");
@@ -21,10 +21,9 @@ else {
 
 // $get_logs = "SELECT employees.EmployeeName as employee_name, employees.EmployeeId as emp_id, devicelogs_processed.LogDate as log_date, devices.DeviceFName as device_name, devices.DeviceLocation as device_location  FROM employees LEFT JOIN devicelogs_processed ON employees.EmployeeId=devicelogs_processed.UserId INNER JOIN devices on devicelogs_processed.DeviceId=devices.DeviceId WHERE date(devicelogs_processed.LogDate)=".$date;
 
-$get_logs = "SELECT employees.EmployeeName as employee_name, employees.EmployeeCode as emp_id FROM employees";
+$get_logs = "SELECT Employees.EmployeeName as employee_name, Employees.EmployeeCode as emp_id FROM Employees WHERE EmployeeName NOT LIKE 'Admin%' OR EmployeeName NOT REGEXP '^[0-9]'";
 
 $result = mysqli_query($con,$get_logs);
-echo $resultl
 
 ?>
 
@@ -116,7 +115,7 @@ echo $resultl
 				<?php  
 				while($row = mysqli_fetch_array($result))  
 				{  
-					$emp_logs = "SELECT devicelogs_processed.LogDate as log_time, devices.DeviceLocation as device_location FROM devicelogs_processed INNER JOIN devices ON devicelogs_processed.DeviceId=devices.DeviceId WHERE devicelogs_processed.UserId=".$row["emp_id"]." AND date(devicelogs_processed.LogDate)='$date'";
+					$emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$date'";
 
 
 					// $emp_logs = "SELECT LogDate as log_time FROM devicelogs_processed WHERE UserId=".$row["emp_id"]." AND date(LogDate)='$date'";
