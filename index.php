@@ -20,7 +20,7 @@ if(isset($_POST['login'])){
 
 }
 else {
-	$error = "Login not set";
+	$error = "Log in to continue";
 }
 
 ?>
