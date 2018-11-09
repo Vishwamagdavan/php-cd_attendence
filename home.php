@@ -21,7 +21,7 @@ else {
 
 // $get_logs = "SELECT employees.EmployeeName as employee_name, employees.EmployeeId as emp_id, devicelogs_processed.LogDate as log_date, devices.DeviceFName as device_name, devices.DeviceLocation as device_location  FROM employees LEFT JOIN devicelogs_processed ON employees.EmployeeId=devicelogs_processed.UserId INNER JOIN devices on devicelogs_processed.DeviceId=devices.DeviceId WHERE date(devicelogs_processed.LogDate)=".$date;
 
-$get_logs = "SELECT employees.EmployeeName as employee_name, employees.EmployeeCode as emp_id FROM employees";
+$get_logs = "SELECT employees.EmployeeName as employee_name, employees.EmployeeCode as emp_id FROM employees WHERE EmployeeName NOT LIKE 'Admin%' OR EmployeeName NOT REGEXP '^[0-9]'";
 
 $result = mysqli_query($con,$get_logs);
 echo $resultl
@@ -135,13 +135,27 @@ echo $resultl
 					if(count($datas) == 2){
 						$checkin = date("H:i:s", strtotime($datas[0]));
 						$checkout = date("H:i:s", strtotime($datas[1]));
-						$total_hours = round(abs($checkin - $checkout));
-						$overtime = abs($total_hours - 8);
+						$total_hours = round(abs($checkout - $checkin));
+						if($total_hours >= 8){
+							$overtime = abs($total_hours - 8);
+						}
 					}else if(count($datas)%2 == 0 && count($datas) != 2){
 						for($i = 0; $i < count($datas); $i=$i+2){
 							$checkin = date("H:i:s", strtotime($datas[i+0]));
 							$checkout = date("H:i:s", strtotime($datas[i+1]));
 							$total_hours += round(abs($checkout - $checkin));
+							if($total_hours >= 8){
+								$overtime = abs($total_hours - 8);
+							}
+						}
+					}
+					else
+					{
+
+						$checkin = date("H:i:s", strtotime($datas[0]));
+						$checkout = date("H:i:s", strtotime($datas[count($datas)-1]));
+						$total_hours = round(abs($checkout - $checkin));
+						if($total_hours >= 8){
 							$overtime = abs($total_hours - 8);
 						}
 					}
