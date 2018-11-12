@@ -134,13 +134,27 @@ $result = mysqli_query($con,$get_logs);
 					if(count($datas) == 2){
 						$checkin = date("H:i:s", strtotime($datas[0]));
 						$checkout = date("H:i:s", strtotime($datas[1]));
-						$total_hours = round(abs($checkin - $checkout));
-						$overtime = abs($total_hours - 8);
+						$total_hours = round(abs($checkout - $checkin));
+						if($total_hours >= 8){
+							$overtime = abs($total_hours - 8);
+						}
 					}else if(count($datas)%2 == 0 && count($datas) != 2){
 						for($i = 0; $i < count($datas); $i=$i+2){
 							$checkin = date("H:i:s", strtotime($datas[i+0]));
 							$checkout = date("H:i:s", strtotime($datas[i+1]));
 							$total_hours += round(abs($checkout - $checkin));
+							if($total_hours >= 8){
+								$overtime = abs($total_hours - 8);
+							}
+						}
+					}
+					else
+					{
+
+						$checkin = date("H:i:s", strtotime($datas[0]));
+						$checkout = date("H:i:s", strtotime($datas[count($datas)-1]));
+						$total_hours = round(abs($checkout - $checkin));
+						if($total_hours >= 8){
 							$overtime = abs($total_hours - 8);
 						}
 					}
