@@ -11,6 +11,7 @@ $result = mysqli_query($con, $query);
 if(isset($_GET['report'])){
     $temp_date = date_create($_GET['reportdate']);
     $date = date_format($temp_date, 'Y-m-d');
+    $current_device = $_GET["devices"];
 }
 
 if(mysqli_num_rows($result)>0){
@@ -21,14 +22,15 @@ if(mysqli_num_rows($result)>0){
     $file = fopen('php://memory', 'w');
     
     //set column headers
-    $fields = array('Employee Name', 'Log Times', 'Total Hours', 'Over Time', 'Location');
+    $fields = array('Employee Name', 'Log Times', 'Total Hours', 'Over Time', 'Attendance', 'Location');
     fputcsv($file, $fields, $delimiter);
     
     //output each row of the data, format line as csv and write to file pointer
     while($row = mysqli_fetch_array($result)){
 
 
-        $emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$date'";
+        $emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.DeviceId=".$current_device." AND DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$date'";
+
 
 
         $emp_logs_data = mysqli_query($con,$emp_logs);
@@ -39,44 +41,62 @@ if(mysqli_num_rows($result)>0){
             $location = $data["device_location"];                   
         }
 
-        $total_hours = 0;
+                    // $total_hours = 0;
         $overtime = 0;
-        if(count($datas) == 2){
-            $checkin = date("H:i:s", strtotime($datas[0]));
-            $checkout = date("H:i:s", strtotime($datas[1]));
-            $total_hours = round(abs($checkout - $checkin));
-            if($total_hours >= 8){
-                $overtime = abs($total_hours - 8);
-            }
-        }else if(count($datas)%2 == 0 && count($datas) != 2){
-            for($i = 0; $i < count($datas); $i=$i+2){
-                $checkin = date("H:i:s", strtotime($datas[i+0]));
-                $checkout = date("H:i:s", strtotime($datas[i+1]));
-                $total_hours += round(abs($checkout - $checkin));
-                if($total_hours >= 8){
-                    $overtime = abs($total_hours - 8);
-                }
-            }
-        }
-        else
-        {
-
-            $checkin = date("H:i:s", strtotime($datas[0]));
-            $checkout = date("H:i:s", strtotime($datas[count($datas)-1]));
-            $total_hours = round(abs($checkout - $checkin));
-            if($total_hours >= 8){
-                $overtime = abs($total_hours - 8);
-            }
-        }
-                    // for($datas as $values)
-
-        $datas = implode(' , ', $datas);
+        $v_datas = $datas;
+        $v_datas = implode(' | ', $datas);
         if(empty($datas)){
             $datas = "Not Present";
         }
+        if(count($datas) > 1){
+            $checkin = new DateTime($datas[0]);
+            $checkout = new DateTime($datas[count($datas)-1]);
 
-        $lineData = array($row["employee_name"], $datas, $total_hours, $overtime, $location);
-        fputcsv($file, $lineData, $delimiter);
+            if(strtotime(date_format($checkin, 'H:i')) <= strtotime('09:20')){
+
+
+                if(strtotime(date_format($checkout, 'H:i')) >= strtotime('17:40')){
+
+
+                    $total_hours = $checkin->diff($checkout);
+
+                    $min_hr_in_day = new DateTime('09:00');
+                    $total_hours = $total_hours->format("%H:%i");
+                    $total_hours = new DateTime($total_hours);
+                    $overtime = $total_hours->diff($min_hr_in_day);
+
+
+                    $lineData = array($row["employee_name"], $v_datas, date_format($total_hours, 'H').' hrs '.date_format($total_hours, 'i'), $overtime->h.' hrs '.$overtime->i.' mins', "Present", $location);
+                    fputcsv($file, $lineData, $delimiter);
+
+                }
+                else{
+
+
+                    $lineData = array($row["employee_name"], $v_datas, $checkin->diff($checkout)->format('%H hrs %i mins'), $overtime->h.' hrs '.$overtime->i.' mins', "Checked Out Early", $location);
+                    fputcsv($file, $lineData, $delimiter);
+
+                }
+
+
+
+            }
+            else{
+
+                $lineData = array($row["employee_name"], $v_datas, $checkin->diff($checkout)->format('%H hrs %i mins'), $overtime->h.' hrs '.$overtime->i.' mins', "Checked In Late", $location);
+                fputcsv($file, $lineData, $delimiter);
+            }
+
+
+        }
+        else{
+
+            $lineData = array($row["employee_name"], "No Logs", "No Work", "No Overtime", "Absent", $location);
+            fputcsv($file, $lineData, $delimiter);
+        }
+
+
+
     }
     
     //move back to beginning of file
