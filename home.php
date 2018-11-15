@@ -8,8 +8,8 @@ if(isset($_GET['logout'])){
 }
 
 if(isset($_GET['date'])){
-	$temp_date = date_create($_GET['datepicker']);
-	$date = date_format($temp_date, 'Y-m-d');
+	$datetime = date_create($_GET['datepicker']);
+	$date = date_format($datetime, 'Y-m-d');
 	$current_device = $_GET['device'];
 }
 else {
@@ -18,6 +18,9 @@ else {
 	$date = date_format($datetime, 'Y-m-d');
 	$current_device = 9;
 }
+
+$my = date_format($datetime, 'm_Y');
+// $year = date_format($datetime, 'Y');
 
 
 // $get_logs = "SELECT employees.EmployeeName as employee_name, employees.EmployeeId as emp_id, devicelogs_processed.LogDate as log_date, devices.DeviceFName as device_name, devices.DeviceLocation as device_location  FROM employees LEFT JOIN devicelogs_processed ON employees.EmployeeId=devicelogs_processed.UserId INNER JOIN devices on devicelogs_processed.DeviceId=devices.DeviceId WHERE date(devicelogs_processed.LogDate)=".$date;
@@ -164,7 +167,7 @@ $result = mysqli_query($con,$get_logs);
 
 				while($row = mysqli_fetch_array($result))  
 				{  
-					$emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.DeviceId=".$current_device." AND DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$date'";
+					$emp_logs = "SELECT DeviceLogs_".$my.".LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_".$my." INNER JOIN Devices ON DeviceLogs_".$my.".DeviceId=Devices.DeviceId WHERE DeviceLogs_".$my.".DeviceId=".$current_device." AND DeviceLogs_".$my.".UserId=".$row["emp_id"]." AND date(DeviceLogs_".$my.".LogDate)='$date'";
 
 
 					// $emp_logs = "SELECT LogDate as log_time FROM devicelogs_processed WHERE UserId=".$row["emp_id"]." AND date(LogDate)='$date'";

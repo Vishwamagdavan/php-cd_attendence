@@ -16,6 +16,8 @@ if(isset($_GET['report'])){
     $current_device = $_GET["devices"];
 }
 
+$my = date_format($temp_date1, "m_Y");
+
 if(mysqli_num_rows($result)>0){
     $delimiter = ",";
     $filename = "attendance_from_".$start_date."_to_".$end_date.".csv";
@@ -60,7 +62,7 @@ if(mysqli_num_rows($result)>0){
                         // echo $dt->format('Y-m-d');
 
             $current_date = $dt->format("Y-m-d");
-            $emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.DeviceId=".$current_device." AND DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$current_date'";
+            $emp_logs = "SELECT DeviceLogs_".$my.".LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_".$my." INNER JOIN Devices ON DeviceLogs_".$my.".DeviceId=Devices.DeviceId WHERE DeviceLogs_".$my.".DeviceId=".$current_device." AND DeviceLogs_".$my.".UserId=".$row["emp_id"]." AND date(DeviceLogs_".$my.".LogDate)='$current_date'";
 
             $emp_logs_data = mysqli_query($con,$emp_logs);
 
