@@ -1,7 +1,7 @@
 <?php
 include('config.php');
 include('session.php');
-//error_reporting(E_ERROR | E_PARSE);
+error_reporting(E_ERROR | E_PARSE);
 if(isset($_GET['logout'])){
 	session_destroy();
 	header("location: index.php");
@@ -10,11 +10,13 @@ if(isset($_GET['logout'])){
 if(isset($_GET['date'])){
 	$temp_date = date_create($_GET['datepicker']);
 	$date = date_format($temp_date, 'Y-m-d');
+	$current_device = $_GET['device'];
 }
 else {
 
 	$datetime = new DateTime();
 	$date = date_format($datetime, 'Y-m-d');
+	$current_device = 9;
 }
 
 
@@ -78,10 +80,23 @@ $result = mysqli_query($con,$get_logs);
 
 
 		<div class="container-login100-form-btn" style="padding-bottom: 15px">
-		<a href='monthly_logs.php' class="btn btn-sm btn-primary">View Monthly Logs</a>
+			<a href='monthly_logs.php' class="btn btn-sm btn-primary">View Monthly Logs</a>
 		</div>
 
 		<form action="home.php" method="get"> 
+			<div class="wrap-input100 validate-input col-md-6" data-validate = "Date is required">
+				<label for="device">Select Device Location</label>
+				<select name="device">
+					<option value='<?php echo $current_device; ?>'>-----SELECT-----</option>
+					<?php 
+					$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices'); 
+					while($device=mysqli_fetch_assoc($device_query)) { 
+						echo "<option value='$device[id]'>$device[location]</option>";
+					}
+					?> 
+
+				</select> 
+			</div>
 			<div class="wrap-input100 validate-input col-md-6" data-validate = "Date is required">
 				<label>Date:</label><br>
 				<input style="border: 1px solid black; border-radius: 5px;" type="text" id="datepicker" placeholder="Select Date" name="datepicker" />
@@ -92,7 +107,8 @@ $result = mysqli_query($con,$get_logs);
 
 		<form action="dayreport.php" method="get"> 
 			<div class="wrap-input100 validate-input col-md-6">
-				<input style="border: 1px solid black; border-radius: 5px;" type="hidden" value="<?php echo $date; ?>" name="reportdate" />
+				<input type="hidden" value="<?php echo $date; ?>" name="reportdate" />
+				<input type="hidden" value="<?php echo $current_device; ?>" name="devices" />
 				<input type="submit" name="report" value="Generate Report" class="btn btn-primary btn-sm">
 				<span class="focus-input100"></span>
 			</div>
@@ -118,14 +134,36 @@ $result = mysqli_query($con,$get_logs);
 					<th>Log Time</th>
 					<th>Total Hours</th>
 					<th>Over Time</th>
+					<th>Attendance</th>
 					<th>Location</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php  
+
+
+				// function sumDateIntervals(DateInterval $a, DateInterval $b)
+				// {
+				// 	$mins = $a->i+$b->i;
+				// 	$hrs = $a->h+$b->h;
+				// 	if($mins >= 60){
+				// 		$hrs += $mins/60;
+				// 		$mins = $mins - 60
+				// 	}
+				// 	return new DateInterval(sprintf('P%dY%dM%dDT%dH%dM%dS',
+				// 		$a->y + $b->y,
+				// 		$a->m + $b->m,
+				// 		$a->d + $b->d,
+				// 		$a->h + $b->h,
+				// 		$a->i + $b->i,
+				// 		$a->s + $b->s
+				// 	));
+				// }
+
+
 				while($row = mysqli_fetch_array($result))  
 				{  
-					$emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$date'";
+					$emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.DeviceId=".$current_device." AND DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$date'";
 
 
 					// $emp_logs = "SELECT LogDate as log_time FROM devicelogs_processed WHERE UserId=".$row["emp_id"]." AND date(LogDate)='$date'";
@@ -139,60 +177,100 @@ $result = mysqli_query($con,$get_logs);
 						$location = $data["device_location"];					
 					}
 
-					$total_hours = 0;
+					// $total_hours = 0;
 					$overtime = 0;
-					if(count($datas) == 2){
-						$checkin = date("H:i:s", strtotime($datas[0]));
-						$checkout = date("H:i:s", strtotime($datas[1]));
-						$total_hours = round(abs($checkout - $checkin));
-						if($total_hours >= 9){
-							$overtime = abs($total_hours - 9);
-						}
-					}else if(count($datas)%2 == 0 && count($datas) != 2){
-						for($i = 0; $i < count($datas); $i=$i+2){
-							$checkin = date("H:i:s", strtotime($datas[i+0]));
-							$checkout = date("H:i:s", strtotime($datas[i+1]));
-							$total_hours += round(abs($checkout - $checkin));
-							if($total_hours >= 9){
-								$overtime = abs($total_hours - 9);
-							}
-						}
-					}
-					else
-					{
-
-						$checkin = date("H:i:s", strtotime($datas[0]));
-						$checkout = date("H:i:s", strtotime($datas[count($datas)-1]));
-						$total_hours = round(abs($checkout - $checkin));
-						if($total_hours >= 9){
-							$overtime = abs($total_hours - 9);
-						}
-					}
-					// for($datas as $values)
-
-					$datas = implode(' | ', $datas);
+					$v_datas = $datas;
+					$v_datas = implode(' | ', $datas);
 					if(empty($datas)){
 						$datas = "Not Present";
 					}
+					if(count($datas) > 1){
+						$checkin = new DateTime($datas[0]);
+						$checkout = new DateTime($datas[count($datas)-1]);
 
-					
+						if(strtotime(date_format($checkin, 'H:i')) <= strtotime('09:20')){
 
 
-					echo '  
-					<tr>  
-					<td>'.$row["employee_name"].'</td> 
-					<td>'.$datas.'</td>
-					<td>'.$total_hours.' hrs </td>
-					<td>'.$overtime.'</td>
-					<td>'.$location.'</td>
-					</tr>';  
+							if(strtotime(date_format($checkout, 'H:i')) >= strtotime('17:40')){
+
+
+								$total_hours = $checkin->diff($checkout);
+
+								$min_hr_in_day = new DateTime('09:00');
+								$total_hours = $total_hours->format("%H:%i");
+								$total_hours = new DateTime($total_hours);
+								$overtime = $total_hours->diff($min_hr_in_day);
+
+
+
+								echo '  
+								<tr>  
+								<td>'.$row["employee_name"].'</td> 
+								<td>'.$v_datas.'</td>
+								<td>'.date_format($total_hours, 'H').' hrs '.date_format($total_hours, 'i').' mins</td>
+								<td>'.$overtime->h.' hrs '.$overtime->i.' mins</td>
+								<td>Present</td>
+								<td>'.$location.'</td>
+								</tr>';  
+
+							}
+							else{
+
+
+								echo '  
+								<tr>  
+								<td>'.$row["employee_name"].'</td> 
+								<td>'.$v_datas.'</td>
+								<td>'.$checkin->diff($checkout)->format("%H hrs %i mins").'</td>
+								<td>No Overtime</td>
+								<td>Checked Out Early</td>
+								<td>'.$location.'</td>
+								</tr>';  
+
+							}
+
+
+
+						}
+						else{
+							echo '  
+							<tr>  
+							<td>'.$row["employee_name"].'</td> 
+							<td>'.$v_datas.'</td>
+							<td>'.$checkin->diff($checkout)->format("%H hrs %i mins").'</td>
+							<td>'.$overtime->h.' hrs '.$overtime->i.' mins</td>
+							<td>Checked In Late</td>
+							<td>'.$location.'</td>
+							</tr>';  
+						}
+
+						// $total_hours = $checkin->diff($checkout);
+
+					}
+					else{
+
+						echo '  
+						<tr>  
+						<td>'.$row["employee_name"].'</td> 
+						<td>No Logs</td>
+						<td> No Work</td>
+						<td> No Overtime </td>
+						<td>Absent</td>
+						<td>'.$location.'</td>
+						</tr>';  
+					}
+
+
+
+
+
 				}  
 				?>  
 			</tbody>
 		</table>
 
 	</div>
-	
+
 
 	<!--===============================================================================================-->
 	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -208,7 +286,7 @@ $result = mysqli_query($con,$get_logs);
 			scale: 1.1
 		})
 	</script>
-	
+
 	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script>$( "#datepicker" ).datepicker();</script>
 
@@ -217,7 +295,7 @@ $result = mysqli_query($con,$get_logs);
 
 	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>  
 	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>      
-	
+
 
 
 </body>

@@ -13,6 +13,7 @@ if(isset($_GET['report'])){
     $temp_date2 = date_create($_GET['end_date']);
     $start_date = date_format($temp_date1, 'Y-m-d');
     $end_date = date_format($temp_date2, 'Y-m-d');
+    $current_device = $_GET["devices"];
 }
 
 if(mysqli_num_rows($result)>0){
@@ -23,14 +24,19 @@ if(mysqli_num_rows($result)>0){
     $file = fopen('php://memory', 'w');
     
     //set column headers
-    $fields = array('Employee Name', 'Total Hours', 'Total Days', 'Total OverTime', 'Location');
+    $fields = array('Employee Name', 'Total Hours', 'Total Days', 'Total Overtime', 'Location');
     fputcsv($file, $fields, $delimiter);
     
     //output each row of the data, format line as csv and write to file pointer
     while($row = mysqli_fetch_array($result)){
 
 
+
         $total_days = 0;
+        $total_overtime_hrs = 0;
+        $total_overtime_mins = 0;
+        $hours = 0;
+
 
         $start_date = new DateTime(date_format($temp_date1, 'Y-m-d'));
         $end_date = new DateTime(date_format($temp_date2, 'Y-m-d'));
@@ -39,68 +45,88 @@ if(mysqli_num_rows($result)>0){
 
         $daterange = new DatePeriod($start_date, new DateInterval('P1D'), $end_date);
 
-        $total_overtime = 0;
-        $hours = 0;
+                    // $start_date = date_format($start_date, 'Y-m-d');
+                    // $end_date = date_format($end_date, 'Y-m-d');
+                    // echo $start_date.'-'.$end_date;
+
+
         foreach($daterange as $dt){
+                        // echo $dt->format("Y-m-d") . "\n";
 
             $datas = [];
-            $location = " ";
             $total_hours = 0;
             $overtime = 0;
+
                         // echo $dt->format('Y-m-d');
 
             $current_date = $dt->format("Y-m-d");
-            $emp_logs = "SELECT Devicelogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$current_date'";
+            $emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.DeviceId=".$current_device." AND DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$current_date'";
 
             $emp_logs_data = mysqli_query($con,$emp_logs);
 
             while($data = mysqli_fetch_array($emp_logs_data)){
                             // echo date('Y-m-d', strtotime($data["log_time"])).' == '.$dt->format('Y-m-d').'****';
                 array_push($datas, $data["log_time"]);
-                $location = $data["device_location"];                   
+                $location = $datas["device_location"];
 
             }
 
 
+            $overtime = 0;
+            $v_datas = $datas;
+            $v_datas = implode(' | ', $datas);
+            if(empty($datas)){
+                $datas = "Not Present";
+            }
 
-            if(count($datas) == 2){
-                $checkin = date("H:i:s", strtotime($datas[0]));
-                $checkout = date("H:i:s", strtotime($datas[1]));
-                $total_hours = round(abs($checkout - $checkin));
-                if($total_hours >= 9){
-                    $overtime = abs($total_hours - 9);
+
+            $checkin = new DateTime($datas[0]);
+            $checkout = new DateTime($datas[count($datas)-1]);
+
+            if(count($datas) > 1){
+
+                if(date_format($checkin, 'l') == "Sunday"){
+                    $overtime = round($checkin->diff($checkout)->h * 2);
+                    echo date_format($checkin, 'l');
+                    $total_overtime_hrs += $overtime;
+                    $hours += $checkin->diff($checkout)->h;
                 }
-            }else if(count($datas)%2 == 0 && count($datas) != 2){
-                for($i = 0; $i < count($datas); $i=$i+2){
-                    $checkin = date("H:i:s", strtotime($datas[i+0]));
-                    $checkout = date("H:i:s", strtotime($datas[i+1]));
-                    $total_hours += round(abs($checkout - $checkin));
-                    if($total_hours >= 9){
-                        $overtime = abs($total_hours - 9);    
+                else {
+
+                    if(strtotime(date_format($checkin, 'H:i')) <= strtotime('09:20')){
+
+
+                        if(strtotime(date_format($checkout, 'H:i')) >= strtotime('17:40')){
+
+
+                            $total_hours = $checkin->diff($checkout);
+
+                            $min_hr_in_day = new DateTime('09:00');
+                            $total_hours = $total_hours->format("%H:%i");
+                            $total_hours = new DateTime($total_hours);
+                            $overtime = $total_hours->diff($min_hr_in_day);
+                            $total_days += 1;
+
+                        }
+
                     }
-                }
-            }
-            else
-            {
+                    $total_overtime_hrs += $overtime->h;
 
-                $checkin = date("H:i:s", strtotime($datas[0]));
-                $checkout = date("H:i:s", strtotime($datas[count($datas)-1]));
-                $total_hours = round(abs($checkout - $checkin));
-                if($total_hours >= 9){
-                    $overtime = abs($total_hours - 9);
+                    $total_overtime_mins += $overtime->i;
+
+                    $hours += $checkin->diff($checkout)->h;
+
                 }
             }
 
 
-            $total_overtime += $overtime;
-            $hours += $total_hours;
 
-            if(abs($total_hours - $overtime) == 9){
-                $total_days += 1;
-            }
         }
 
-        $lineData = array($row["employee_name"], $hours, $total_days, $total_overtime, $location);
+        $total_overtime_hrs += intval($total_overtime_mins/60);
+        $total_overtime_mins = $total_overtime_mins%60;
+
+        $lineData = array($row["employee_name"], $hours, $total_days, $total_overtime_hrs." hrs ".$total_overtime_mins." mins", $location);
         fputcsv($file, $lineData, $delimiter);
     }
     

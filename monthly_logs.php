@@ -12,6 +12,7 @@ if(isset($_GET['date'])){
 	$temp_date2 = date_create($_GET['end']);
 	$start_date = date_format($temp_date1, 'Y-m-d');
 	$end_date = date_format($temp_date2, 'Y-m-d');
+	$current_device = $_GET['device'];
 }
 else {
 
@@ -19,6 +20,7 @@ else {
 	$temp_date2 = $temp_date1->modify( '+10 day' );
 	$start_date = date_format($temp_date1, 'Y-m-d');
 	$end_date = date_format($temp_date2, 'Y-m-d');
+	$current_device = 9;
 }
 // $date = '2018-09-27';
 
@@ -88,6 +90,19 @@ echo $resultl
 		
 		<form action="monthly_logs.php" method="get"> 
 			<div class="wrap-input100 validate-input col-md-6" data-validate = "Date is required">
+				<label for="device">Select Device Location</label>
+				<select name="device">
+					<option value='<?php echo $current_device; ?>'>-----SELECT-----</option>
+					<?php 
+					$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices'); 
+					while($device=mysqli_fetch_assoc($device_query)) { 
+						echo "<option value='$device[id]'>$device[location]</option>";
+					}
+					?> 
+
+				</select> 
+			</div>
+			<div class="wrap-input100 validate-input col-md-6" data-validate = "Date is required">
 				<label>Select Date Range:</label><br>
 				<input style="border: 1px solid black; border-radius: 5px;" type="text" id="datepicker" placeholder="Select Start Date" name="start" />
 				<input style="border: 1px solid black; border-radius: 5px;" type="text" id="datepicker2" placeholder="Select End Date" name="end" />
@@ -99,8 +114,9 @@ echo $resultl
 
 		<form action="monthlyreport.php" method="get"> 
 			<div class="wrap-input100 validate-input col-md-6">
-				<input style="border: 1px solid black; border-radius: 5px;" type="hidden" value="<?php echo $start_date; ?>" name="start_date" />
-				<input style="border: 1px solid black; border-radius: 5px;" type="hidden" value="<?php echo $end_date; ?>" name="end_date" />
+				<input type="hidden" value="<?php echo $start_date; ?>" name="start_date" />
+				<input type="hidden" value="<?php echo $end_date; ?>" name="end_date" />
+				<input type="hidden" value="<?php echo $current_device; ?>" name="devices" />
 				<input type="submit" name="report" value="Generate Report" class="btn btn-primary btn-sm">
 				<span class="focus-input100"></span>
 			</div>
@@ -131,18 +147,26 @@ echo $resultl
 			</thead>
 			<tbody>
 				<?php  
+
+				// function sumDateIntervals(DateInterval $a, DateInterval $b)
+				// {
+				// 	return new DateInterval(sprintf('P%dY%dM%dDT%dH%dM%dS',
+				// 		$a->y + $b->y,
+				// 		$a->m + $b->m,
+				// 		$a->d + $b->d,
+				// 		$a->h + $b->h,
+				// 		$a->i + $b->i,
+				// 		$a->s + $b->s
+				// 	));
+				// }
 				while($row = mysqli_fetch_array($result)){
 
-
-					// $emp_logs = "SELECT devicelogs_processed.LogDate as log_time, devices.DeviceLocation as device_location FROM devicelogs_processed INNER JOIN devices ON devicelogs_processed.DeviceId=devices.DeviceId WHERE devicelogs_processed.UserId=".$row["emp_id"]." AND month(devicelogs_processed.LogDate)='$month' AND year(devicelogs_processed.LogDate)='$year'";
-
-
-					// // $emp_logs = "SELECT LogDate as log_time FROM devicelogs_processed WHERE UserId=".$row["emp_id"]." AND date(LogDate)='$date'";
-
-
-					// $emp_logs_data = mysqli_query($con,$emp_logs);
 					
 					$total_days = 0;
+					$total_overtime_hrs = 0;
+					$total_overtime_mins = 0;
+					$hours = 0;
+
 
 					$start_date = new DateTime(date_format($temp_date1, 'Y-m-d'));
 					$end_date = new DateTime(date_format($temp_date2, 'Y-m-d'));
@@ -155,8 +179,7 @@ echo $resultl
 					// $end_date = date_format($end_date, 'Y-m-d');
 					// echo $start_date.'-'.$end_date;
 					
-					$total_overtime = 0;
-					$hours = 0;
+
 					foreach($daterange as $dt){
 						// echo $dt->format("Y-m-d") . "\n";
 						
@@ -167,7 +190,7 @@ echo $resultl
 						// echo $dt->format('Y-m-d');
 
 						$current_date = $dt->format("Y-m-d");
-						$emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$current_date'";
+						$emp_logs = "SELECT DeviceLogs_Processed.LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_Processed INNER JOIN Devices ON DeviceLogs_Processed.DeviceId=Devices.DeviceId WHERE DeviceLogs_Processed.DeviceId=".$current_device." AND DeviceLogs_Processed.UserId=".$row["emp_id"]." AND date(DeviceLogs_Processed.LogDate)='$current_date'";
 
 						$emp_logs_data = mysqli_query($con,$emp_logs);
 
@@ -179,53 +202,71 @@ echo $resultl
 						}
 						
 
+						$overtime = 0;
+						$v_datas = $datas;
+						$v_datas = implode(' | ', $datas);
+						if(empty($datas)){
+							$datas = "Not Present";
+						}
 
-						if(count($datas) == 2){
-							$checkin = date("H:i:s", strtotime($datas[0]));
-							$checkout = date("H:i:s", strtotime($datas[1]));
-							$total_hours = round(abs($checkout - $checkin));
-							if($total_hours >= 9){
-								$overtime = abs($total_hours - 9);
+
+						$checkin = new DateTime($datas[0]);
+						$checkout = new DateTime($datas[count($datas)-1]);
+						
+						if(count($datas) > 1){
+
+							if(date_format($checkin, 'l') == "Sunday"){
+								$overtime = round($checkin->diff($checkout)->h * 2);
+								echo date_format($checkin, 'l');
+								$total_overtime_hrs += $overtime;
+								$hours += $checkin->diff($checkout)->h;
 							}
-						}else if(count($datas)%2 == 0 && count($datas) != 2){
-							for($i = 0; $i < count($datas); $i=$i+2){
-								$checkin = date("H:i:s", strtotime($datas[i+0]));
-								$checkout = date("H:i:s", strtotime($datas[i+1]));
-								$total_hours += round(abs($checkout - $checkin));
-								if($total_hours >= 9){
-									$overtime = abs($total_hours - 9);	
+							else {
+
+								if(strtotime(date_format($checkin, 'H:i')) <= strtotime('09:20')){
+
+
+									if(strtotime(date_format($checkout, 'H:i')) >= strtotime('17:40')){
+
+
+										$total_hours = $checkin->diff($checkout);
+
+										$min_hr_in_day = new DateTime('09:00');
+										$total_hours = $total_hours->format("%H:%i");
+										$total_hours = new DateTime($total_hours);
+										$overtime = $total_hours->diff($min_hr_in_day);
+										$total_days += 1;
+
+									}
+
 								}
-							}
-						}
-						else
-						{
+								$total_overtime_hrs += $overtime->h;
 
-							$checkin = date("H:i:s", strtotime($datas[0]));
-							$checkout = date("H:i:s", strtotime($datas[count($datas)-1]));
-							$total_hours = round(abs($checkout - $checkin));
-							if($total_hours >= 9){
-								$overtime = abs($total_hours - 9);
+								$total_overtime_mins += $overtime->i;
+
+								$hours += $checkin->diff($checkout)->h;
+
 							}
 						}
 
 
-						$total_overtime += $overtime;
-						$hours += $total_hours;
-						if(abs($total_hours - $overtime) == 9){
-							$total_days += 1;
-						}
+
 					}
+
+					$total_overtime_hrs += intval($total_overtime_mins/60);
+					$total_overtime_mins = $total_overtime_mins%60;
+
+					echo '  
+					<tr>  
+					<td>'.$row["employee_name"].'</td> 
+					<td>'.$hours.'</td>
+					<td>'.$total_days.'</td>
+					<td>'.$total_overtime_hrs.' hrs '.$total_overtime_mins.' mins</td>
+					<td>'.$location.'</td>
+					</tr>';  
 					// 	$start_date = date("Y-m-d", strtotime("+1 day", strtotime($start_date)));
 					// }                                     
 
-
-					echo '<tr>  
-					<td>'.$row["employee_name"].'</td> 
-					<td>'.$hours.' hrs</td>
-					<td>'.$total_days.' days</td>
-					<td>'.$total_overtime.' hrs</td>
-					<td>'.$location.'</td>
-					</tr>';  
 				}
 				?>  
 			</tbody>
