@@ -160,6 +160,7 @@ echo $resultl
 				// 		$a->s + $b->s
 				// 	));
 				// }
+				$ccnt=1;
 				while($row = mysqli_fetch_array($result)){
 
 					
@@ -206,6 +207,9 @@ echo $resultl
 						$overtime = 0;
 						$v_datas = $datas;
 						$v_datas = implode(' | ', $datas);
+						if($ccnt == 4){
+							echo $v_datas;
+						}
 						if(empty($datas)){
 							$datas = "Not Present";
 						}
@@ -266,7 +270,8 @@ echo $resultl
 					<td>'.$location.'</td>
 					</tr>';  
 					// 	$start_date = date("Y-m-d", strtotime("+1 day", strtotime($start_date)));
-					// }                                     
+					// }  
+					$ccnt += 1;                                   
 
 				}
 				?>  
