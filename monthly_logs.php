@@ -245,7 +245,7 @@ echo $resultl
 
 								$total_overtime_mins += $overtime->i;
 
-								$hours += $checkin->diff($checkout)->h;
+								$hours += $$total_hours->h;
 
 							}
 						}
