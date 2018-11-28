@@ -245,7 +245,7 @@ echo $resultl
 
 								$total_overtime_mins += $overtime->i;
 
-								$hours += $$total_hours->h;
+								$hours += $total_hours->h;
 
 							}
 						}
