@@ -253,8 +253,13 @@ echo $resultl
 
 					}
 
+
+
 					$total_overtime_hrs += intval($total_overtime_mins/60);
 					$total_overtime_mins = $total_overtime_mins%60;
+
+					$hours -= $total_overtime_hrs;
+					$total_days = round($hours/9);
 
 					echo '  
 					<tr>  
