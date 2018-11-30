@@ -204,7 +204,6 @@ echo $resultl
 						
 
 						$overtime = 0;
-						$v_datas = $datas;
 						$v_datas = implode(' | ', $datas);
 						if(empty($datas)){
 							$datas = "Not Present";
