@@ -180,7 +180,8 @@ echo $resultl
 					// $end_date = date_format($end_date, 'Y-m-d');
 					// echo $start_date.'-'.$end_date;
 					
-
+					$log_count = 0;
+					$v_datas[] = " ";
 					foreach($daterange as $dt){
 						// echo $dt->format("Y-m-d") . "\n";
 						
@@ -194,7 +195,7 @@ echo $resultl
 						$emp_logs = "SELECT DeviceLogs_".$my.".LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_".$my." INNER JOIN Devices ON DeviceLogs_".$my.".DeviceId=Devices.DeviceId WHERE DeviceLogs_".$my.".DeviceId=".$current_device." AND DeviceLogs_".$my.".UserId=".$row["emp_id"]." AND date(DeviceLogs_".$my.".LogDate)='$current_date'";
 
 						$emp_logs_data = mysqli_query($con,$emp_logs);
-
+						
 						while($data = mysqli_fetch_array($emp_logs_data)){
 							// echo date('Y-m-d', strtotime($data["log_time"])).' == '.$dt->format('Y-m-d').'****';
 							array_push($datas, $data["log_time"]);
@@ -202,10 +203,11 @@ echo $resultl
 
 						}
 						
+						$log_count += count($datas);
 
 						$overtime = 0;
-						$v_datas = $datas;
-						$v_datas = implode(' | ', $datas);
+						//$v_datas = $datas;
+						$v_datas = array_merge($v_datas, $datas);
 						if(empty($datas)){
 							$datas = "Not Present";
 						}
@@ -264,6 +266,8 @@ echo $resultl
 					<td>'.$total_days.'</td>
 					<td>'.$total_overtime_hrs.' hrs '.$total_overtime_mins.' mins</td>
 					<td>'.$location.'</td>
+					<td>'.implode(' | ',$v_datas).'</td>
+					<td>'.$log_count.'</td>
 					</tr>';  
 					// 	$start_date = date("Y-m-d", strtotime("+1 day", strtotime($start_date)));
 					// }                                     
