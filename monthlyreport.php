@@ -129,7 +129,7 @@ if(mysqli_num_rows($result)>0){
         $total_overtime_mins = $total_overtime_mins%60;
 
         
-        $hours -= $total_overtime_hrs;
+        //$hours -= $total_overtime_hrs;
         $total_days = round($hours/9);
 
         $lineData = array($row["employee_name"], $hours, $total_days, $total_overtime_hrs." hrs ".$total_overtime_mins." mins", $location);

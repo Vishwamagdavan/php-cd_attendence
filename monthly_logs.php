@@ -217,7 +217,7 @@ echo $resultl
 
 							if(date_format($checkin, 'l') == "Sunday"){
 								$overtime = round($checkin->diff($checkout)->h * 2);
-								echo date_format($checkin, 'l');
+								//echo date_format($checkin, 'l');
 								$total_overtime_hrs += $overtime;
 								$hours += $checkin->diff($checkout)->h;
 							}
@@ -258,7 +258,7 @@ echo $resultl
 					$total_overtime_hrs += intval($total_overtime_mins/60);
 					$total_overtime_mins = $total_overtime_mins%60;
 
-					$hours -= $total_overtime_hrs;
+					//$hours -= $total_overtime_hrs;
 					$total_days = round($hours/9);
 
 					echo '  
