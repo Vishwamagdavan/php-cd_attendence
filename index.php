@@ -11,7 +11,16 @@ if(isset($_POST['login'])){
 	$query_run=mysqli_query($con,$query);
 	if(mysqli_num_rows($query_run)>0){
 		$_SESSION['user']=$username;
-		header("location: home.php");
+		if($_SESSION['user'] == "IEEE")
+		{
+			header("location: home1.php");
+
+		}
+		else
+		{
+			header("location: home.php");
+        }
+		
 	}
 	else{
 		$error = "Your Login Name or Password is invalid";
@@ -30,7 +39,7 @@ else {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Hoshitec Attendance</title>
+	<title>Attendance</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
@@ -61,7 +70,7 @@ else {
 
 				<form class="login100-form validate-form" method="post" action="index.php">
 					<span class="login100-form-title">
-						Hoshitec Admin Login
+						Login
 					</span>
 
 					<div class="wrap-input100 validate-input">

@@ -4,17 +4,25 @@ include('config.php');
 error_reporting(E_ERROR | E_PARSE);
 
 //get records from database
-$query = "SELECT EmployeeName as employee_name, EmployeeCode as emp_id FROM Employees WHERE EmployeeName NOT LIKE 'Admin%' OR EmployeeName NOT REGEXP '^[0-9]'";
-
-$result = mysqli_query($con, $query);
 
 if(isset($_GET['report'])){
     $temp_date = date_create($_GET['reportdate']);
     $date = date_format($temp_date, 'Y-m-d');
     $current_device = $_GET["devices"];
+        if($current_device==9){
+        $device_emp_code=1101;
+    }
+    else{
+        $device_emp_code=1102;
+    }
+
+    $query = "SELECT EmployeeName as employee_name, EmployeeCode as emp_id FROM Employees WHERE LEFT(EmployeeCode,4)='$device_emp_code'";
+
+    $result = mysqli_query($con, $query);
+
 }
 
-$my = date_format($temp_date, "m_Y");
+$my = date_format($temp_date, "n_Y");
 
 if(mysqli_num_rows($result)>0){
     $delimiter = ",";

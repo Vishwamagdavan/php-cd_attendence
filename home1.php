@@ -40,8 +40,8 @@ else {
 
 	$datetime = new DateTime();
 	$date = date_format($datetime, 'Y-m-d');
-	$current_device = 9;
-	$device_emp_code=1101;
+	$current_device = 14;
+	$device_emp_code=1201;
 }
 
 $my = date_format($datetime, 'n_Y');
@@ -52,8 +52,11 @@ $my = date_format($datetime, 'n_Y');
 
 // $get_logs = "SELECT Employees.EmployeeName as employee_name, Employees.EmployeeCode as emp_id FROM Employees WHERE EmployeeName NOT LIKE 'Admin%' OR EmployeeName NOT REGEXP '^[0-9]' AND LEFT(EmployeeCode,4)=1102";
 
-	$get_logs = "SELECT Employees.RecordStatus as status,Employees.EmployeeName as employee_name, Employees.EmployeeCode as emp_id FROM Employees WHERE LEFT(EmployeeCode,4)='$device_emp_code'";	
+
+$get_logs = "SELECT Employees.RecordStatus as status, Employees.EmployeeName as employee_name, Employees.EmployeeCode as emp_id FROM Employees WHERE LEFT(EmployeeCode,4)='$device_emp_code'";
+
 $result = mysqli_query($con,$get_logs);
+
 ?>
 
 
@@ -117,7 +120,7 @@ $result = mysqli_query($con,$get_logs);
 </nav>
 
 <body>
-	<div class="container" style="padding-top:20px ">
+		<div class="container" style="padding-top:20px ">
 		<!-- <span class="login100-form-title">
 			Dashboard
 		</span> -->
@@ -127,64 +130,64 @@ $result = mysqli_query($con,$get_logs);
 		  	</div>
 		 	<div class="card-body">
 		 		<form action="home.php" method="get">
-			  	<div class="row">
-	            	<div class="col-md-6">
-	                	<div class="form-group">
-	                 		<select name="device" class="form-control">
-								<option value='<?php echo $current_device; ?>'>-----Select Device Location-----</option>
+				  	<div class="row">
+		            	<div class="col-md-6">
+		                	<div class="form-group">
+		                 		<select name="device" class="form-control">
+
+									<option value='<?php echo $current_device; ?>'>-----Select Device Location-----</option>
 									<?php 
 									$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices'); 
 									while($device=mysqli_fetch_assoc($device_query)) { 
-					                    if($_SESSION['user']=="admin")
-					                    {
-					                    	echo "<option value='$device[id]'>$device[location]</option>";
-					                    }
-					                    else if($_SESSION['user']=="Hoshitec")
-					                    {
-					                    	if($device[location] == "Hoshitec-G")
-					                    	{
-					                    		$loca = "Gurgaon";
-					                    		echo "<option value='$device[id]'>$loca</option>";
-					                    	}
-					                    	if($device[location] == "Bangalore")
-					                    	{
-					                    		echo "<option value='$device[id]'>$device[location]</option>";
-					                    	}
-					                    	
-					                    }
-					                    else if($_SESSION['user']=="IEEE")
-					                    {
-					                    	if($device[location] == "IEEEMadras")
-					                    	echo "<option value='$device[id]'>$device[location]</option>";
-					                    }
+				                        if($_SESSION['user']=="admin")
+				                        {
+				                        	echo "<option value='$device[id]'>$device[location]</option>";
+				                        }
+				                        else if($_SESSION['user']=="Hoshitec")
+				                        {
+				                        	if($device[location] == "Hoshitec-G")
+				                        	{
+				                        		$loca = "Gurgaon";
+				                        		echo "<option value='$device[id]'>$loca</option>";
+				                        	}
+				                        	if($device[location] == "Bangalore")
+				                        	{
+				                        		echo "<option value='$device[id]'>$device[location]</option>";
+				                        	}
+				                        	
+				                        }
+				                        else if($_SESSION['user']=="IEEE")
+				                        {
+				                        	if($device[location] == "IEEEMadras")
+				                        	echo "<option value='$device[id]'>$device[location]</option>";
+				                        }
 										
 									}
 									?> 
 
-							</select> 
-	                	</div>
-	                </div>
-	              <!-- /.form-group -->
-	            	
-		            <div class="col-md-4">		                
-		                 <div class="form-group">
-		                  	<input style="border: 1px solid black; border-radius: 5px;" type="text" id="datepicker" class="form-control"  placeholder="Select Date" name="datepicker" />
-
-							
+								</select> 
+		                	</div>
 		                </div>
-		            </div>
-		            <div class="col-md-2">
-		            	<div class="form-group">
-		            		<input type="submit" name="date"  value="Get Logs" class="btn btn-primary">
-							<span class="focus-input100"></span>
-		            	</div>
-		          	</div>
-            <!-- /.col -->
-				</div>
+		              <!-- /.form-group -->
+		            	
+			            <div class="col-md-4">		                
+			                 <div class="form-group">
+			                  	<input style="border: 1px solid black; border-radius: 5px;" type="text" id="datepicker" class="form-control"  placeholder="Select Date" name="datepicker" />
+
+								
+			                </div>
+			            </div>
+			            <div class="col-md-2">
+			            	<div class="form-group">
+			            		<input type="submit" name="date"  value="Get Logs" class="btn btn-primary">
+								<span class="focus-input100"></span>
+			            	</div>
+			          	</div>
+	            <!-- /.col -->
+					</div>
 				</form>
           		</div>
-          		
-			  			    
+          			  			    
 			</div>
 
 			  <div class="card-footer text-muted">
@@ -197,7 +200,8 @@ $result = mysqli_query($con,$get_logs);
 								<input type="submit" name="report" value="Generate Report" class="btn btn-primary pull-left">
 								<span class="focus-input100"></span>
 							</div>
-						</form>			  			
+						</form>	
+
 			  		</div>
 			  		<div class="col-md-4">
 			  			<div class="form-group">
@@ -220,7 +224,8 @@ $result = mysqli_query($con,$get_logs);
 			  </div>
 		</div>
 
-	
+		
+		
 
 		<div id="datepicker"></div>
 
@@ -243,7 +248,7 @@ $result = mysqli_query($con,$get_logs);
 					<th>Total Hours</th>
 					<th>Over Time</th>
 					<th>Attendance</th>
-
+					
 					<!-- <th>Location</th> -->
 				</tr>
 			</thead>
@@ -275,16 +280,14 @@ $result = mysqli_query($con,$get_logs);
 					$emp_logs = "SELECT DeviceLogs_".$my.".LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_".$my." INNER JOIN Devices ON DeviceLogs_".$my.".DeviceId=Devices.DeviceId WHERE DeviceLogs_".$my.".DeviceId=".$current_device." AND DeviceLogs_".$my.".UserId=".$row["emp_id"]." AND date(DeviceLogs_".$my.".LogDate)='$date'";
                    
 
-
 					// $emp_logs = "SELECT LogDate as log_time FROM devicelogs_processed WHERE UserId=".$row["emp_id"]." AND date(LogDate)='$date'";
 
-                    
+                     
 
 
 					$emp_logs_data = mysqli_query($con,$emp_logs);
 					$datas = [];
 					$location = " ";
-					
 					while($data = mysqli_fetch_array($emp_logs_data)){
 						array_push($datas, $data["log_time"]);
 						$location = $data["device_location"];					
@@ -312,31 +315,32 @@ $result = mysqli_query($con,$get_logs);
 
 								$total_hours = $checkin->diff($checkout);
 
-								$min_hr_in_day = new DateTime('09:00');
+								$min_hr_in_day = new DateTime('10:00');
 								$total_hours = $total_hours->format("%H:%i");
 								$total_hours = new DateTime($total_hours);
 								$overtime = $total_hours->diff($min_hr_in_day);
 
+                            if($row["status"]==1)
+                            {
 
-								if($row["status"]==1)
-								{
 								echo '  
 								<tr>  
-                                <td>'.$row["emp_id"].'</td>
+								<td>'.$row["emp_id"].'</td>
+
 								<td>'.$row["employee_name"].'</td> 
 								<td>'.$v_datas.'</td>
 								<td>'.date_format($total_hours, 'H').' hrs '.date_format($total_hours, 'i').' mins</td>
 								<td>'.$overtime->h.' hrs '.$overtime->i.' mins</td>
 								<td>Present</td>
 								
-								</tr>';  
-							}
+								</tr>'; 
+								} 
 
 							}
 							else{
 
-								if($row["status"]==1)
-								{
+ 								 if($row["status"]==1)
+                            {
 								echo '  
 								<tr>  
 								<td>'.$row["emp_id"].'</td>
@@ -347,16 +351,16 @@ $result = mysqli_query($con,$get_logs);
 								<td>Checked Out Early</td>
 								
 								</tr>';  
-							}
 
 							}
+						}
 
 
 
 						}
 						else{
-							if($row["status"]==1)
-								{
+							 if($row["status"]==1)
+                            {
 							echo '  
 							<tr>  
 							<td>'.$row["emp_id"].'</td>
@@ -366,19 +370,19 @@ $result = mysqli_query($con,$get_logs);
 							<td>'.$overtime->h.' hrs '.$overtime->i.' mins</td>
 							<td>Checked In Late</td>
 							
-							</tr>';  
-						}
+							</tr>'; 
+							} 
 						}
 
 						// $total_hours = $checkin->diff($checkout);
 
 					}
 					else{
-						if($row["status"]==1)
-								{
+							 if($row["status"]==1)
+                            {
 						echo '  
-						<tr>  
-						<td>'.$row["emp_id"].'</td>
+						<tr> 
+						<td>'.$row["emp_id"].'</td> 
 						<td>'.$row["employee_name"].'</td> 
 						<td>No Logs</td>
 						<td> No Work</td>

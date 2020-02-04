@@ -6,6 +6,8 @@ if(isset($_GET['logout'])){
 	session_destroy();
 	header("location: index.php");
 }
+
+
 ?>
 
 
@@ -39,7 +41,6 @@ if(isset($_GET['logout'])){
 	
 
 </head>
-
 <nav class="navbar navbar-light bg-dark">
 	<span class="navbar-brand mb-0 h1" style="color: white">Hoshitec India Attendance Manager</span>
 	<form>
@@ -59,10 +60,11 @@ if(isset($_GET['logout'])){
 		  	<div class="card-header">
 		    	Monthly Logs
 		  	</div>
-		  	<form action="month.php" method="post">
-		 		<div class="card-body">		 		
+		  	<form action="individual_log.php" method="post">
+		 		<div class="card-body">
+		 		
 				  	<div class="row">
-		            	<div class="col-md-4">
+		            	<div class="col-md-3">
 		                	<div class="form-group">
 		                 		<select name="device" class="form-control">
 		                 			<option >Select Location</option>
@@ -72,7 +74,7 @@ if(isset($_GET['logout'])){
 		                	</div>	                
 		              <!-- /.form-group -->
 		            	</div>
-			            <div class="col-md-4">		                
+			            <div class="col-md-3">		                
 			                 <div class="form-group">
 			                  	<select name="month" class="form-control">
 			                  		<option >Select Month</option>
@@ -91,7 +93,7 @@ if(isset($_GET['logout'])){
 								</select>							
 			                </div>
 			            </div>
-			            <div class="col-md-4">
+			            <div class="col-md-3">
 			            	<div class="form-group">
 			            		<select name="year" class="form-control">
 			            			<option >Select Year</option>
@@ -101,22 +103,44 @@ if(isset($_GET['logout'])){
 								</select>
 			            	</div>
 			          	</div>
+			          	<div class="col-md-3">
+			            	<div class="form-group">
+			            		<select name="empoyee_code" class="form-control">
+			            			<option >Select Employee</option>
+									<?php
+
+										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status = 'Working'");
+										while($device=mysqli_fetch_assoc($device_query)) {
+											// foreach ($device as $key => $value) {
+											# code...
+											echo "<option value='$device[id]'>$device[name]</option>"
+											;
+										// }
+										
+										}
+									?>
+
+								</select>
+			            	</div>
+			          	</div>
+
 	          		</div>
           	
 				</div>
-			 	<div class="card-footer text-muted">
-			  		<div class="row">
-			  		
-			  			<div class="col-md-3 pull-right">
-			  				<div class="form-group">
-			  					<input type="submit" class="form-control btn btn-primary " name="sub" value="GET LOGS">
-			  				</div>
-			  			
-			  			</div>			  		
+				 <div class="card-footer text-muted">
+				  	<div class="row">
+				  		
+				  		<div class="col-md-3 pull-right">
+				  			<div class="form-group">
+				  				<input type="submit" class="form-control btn btn-primary " name="sub" value="GET LOGS">
+				  			</div>
+				  			
+				  		</div>
+				  		
 
-			  		</div>
+				  	</div>
 				</div>
-			</form>
+		</form>
 		</div>
 		
 
