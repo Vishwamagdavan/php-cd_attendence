@@ -99,31 +99,39 @@ if(isset($_POST['sub'])){
 						$oth=0;
 						$otm=0;
 						$days=0;
-					while ($r=mysqli_fetch_array($res)) {
-						$arr=[];
-						$query2="SELECT * FROM DeviceLogs_".$month."_".$year." WHERE date(`LogDate`) = '".$r['uniquedays']."' AND UserId=".$empoyee_code;
-						$query2_run=mysqli_query($con,$query2);
-						while($date=mysqli_fetch_array($query2_run)){
-							array_push($arr, $date['LogDate']);
-						}
-						$checkin=strtotime($arr[0]);
-						$checkout=strtotime($arr[count($arr)-1]);
-						$seconds=($checkout-$checkin);
-						$hours = abs(floor($seconds / 3600));
-						$mins = abs(floor($seconds / 60 % 60));
-						$secs = abs(floor($seconds % 60));
-						$timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
-						if($hours>=9){
-							$oth=($oth+$hours)-9;
-							$otm=$otm+$mins;
-							if($otm>59){
-								$oth++;
-								$otm=0;
+						if($res==true)
+						{
+							while ($r=mysqli_fetch_array($res)) {
+								$arr=[];
+								$query2="SELECT * FROM DeviceLogs_".$month."_".$year." WHERE date(`LogDate`) = '".$r['uniquedays']."' AND UserId=".$empoyee_code;
+								$query2_run=mysqli_query($con,$query2);
+								while($date=mysqli_fetch_array($query2_run)){
+									array_push($arr, $date['LogDate']);
+								}
+								$checkin=strtotime($arr[0]);
+								$checkout=strtotime($arr[count($arr)-1]);
+								$seconds=($checkout-$checkin);
+								$hours = abs(floor($seconds / 3600));
+								$mins = abs(floor($seconds / 60 % 60));
+								$secs = abs(floor($seconds % 60));
+								$timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+								if($hours>=9){
+									$oth=($oth+$hours)-9;
+									$otm=$otm+$mins;
+									if($otm>59){
+										$oth++;
+										$otm=0;
+									}
+								}
+								$sum=$sum+$hours;
+								$days++;
 							}
 						}
-						$sum=$sum+$hours;
-						$days++;
-					}
+						else
+						{
+							echo "No Data found!";
+						}
+					
 					// echo "<br>";
 					// echo "TOTAL HOURS=".$sum."<br>";
 					// echo "OVERTIME= ".$oth." ".$otm;
