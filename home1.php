@@ -129,7 +129,7 @@ $result = mysqli_query($con,$get_logs);
 		    	<?php echo $header ;?>
 		  	</div>
 		 	<div class="card-body">
-		 		<form action="home.php" method="get">
+		 		<form action="home1.php" method="get">
 				  	<div class="row">
 		            	<div class="col-md-6">
 		                	<div class="form-group">
@@ -158,7 +158,7 @@ $result = mysqli_query($con,$get_logs);
 				                        }
 				                        else if($_SESSION['user']=="IEEE")
 				                        {
-				                        	if($device[location] == "IEEEMadras")
+				                        	if($device[location] == "fdsafadsf")
 				                        	echo "<option value='$device[id]'>$device[location]</option>";
 				                        }
 										
@@ -205,7 +205,7 @@ $result = mysqli_query($con,$get_logs);
 			  		</div>
 			  		<div class="col-md-4">
 			  			<div class="form-group">
-			  				<a href='individual.php' class="btn btn-primary ">Individual Logs</a>
+			  				<a href='individual1.php' class="btn btn-primary ">Individual Logs</a>
 			  			</div>	
 			  						  			
 			  		</div>
