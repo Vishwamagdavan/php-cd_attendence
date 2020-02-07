@@ -108,7 +108,7 @@ if(isset($_GET['logout'])){
 			            			<option >Select Employee</option>
 									<?php
 
-										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status = 'Working' AND id LIKE '12%");
+										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status='Working' AND EmployeeCode LIKE '12%' ");
 										while($device=mysqli_fetch_assoc($device_query)) {
 											// foreach ($device as $key => $value) {
 											# code...

@@ -158,7 +158,7 @@ $result = mysqli_query($con,$get_logs);
 				                        }
 				                        else if($_SESSION['user']=="IEEE")
 				                        {
-				                        	if($device[location] == "IEEEMadras")
+				                        	if($device[location] == "IEEE Madras")
 				                        	echo "<option value='$device[id]'>$device[location]</option>";
 				                        }
 										
