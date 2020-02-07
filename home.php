@@ -133,7 +133,7 @@ $result = mysqli_query($con,$get_logs);
 	                 		<select name="device" class="form-control">
 								<option value='<?php echo $current_device; ?>'>-----Select Device Location-----</option>
 									<?php 
-									$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices'); 
+									$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices Where DeviceID="1" Or DeviceID="2"'); 
 									while($device=mysqli_fetch_assoc($device_query)) { 
 					                    if($_SESSION['user']=="admin")
 					                    {

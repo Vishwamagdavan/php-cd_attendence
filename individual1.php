@@ -42,7 +42,7 @@ if(isset($_GET['logout'])){
 
 </head>
 <nav class="navbar navbar-light bg-dark">
-	<span class="navbar-brand mb-0 h1" style="color: white">Hoshitec India Attendance Manager</span>
+	<span class="navbar-brand mb-0 h1" style="color: white">IEEE Attendance Manager</span>
 	<form>
 
 		<div class="container-login100-form-btn" style="padding-bottom: 15px">
@@ -60,7 +60,7 @@ if(isset($_GET['logout'])){
 		  	<div class="card-header">
 		    	Indvidual Log
 		  	</div>
-		  	<form action="individual_log.php" method="post">
+		  	<form action="individual_log1.php" method="post">
 		 		<div class="card-body">
 		 		
 				  	<div class="row">

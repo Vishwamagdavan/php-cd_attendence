@@ -137,7 +137,7 @@ $result = mysqli_query($con,$get_logs);
 
 									<option value='<?php echo $current_device; ?>'>-----Select Device Location-----</option>
 									<?php 
-									$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices'); 
+									$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices where id="14"'); 
 									while($device=mysqli_fetch_assoc($device_query)) { 
 				                        if($_SESSION['user']=="admin")
 				                        {
@@ -158,7 +158,7 @@ $result = mysqli_query($con,$get_logs);
 				                        }
 				                        else if($_SESSION['user']=="IEEE")
 				                        {
-				                        	if($device[location] == "fdsafadsf")
+				                        	if($device[location] == "IEEEMadras")
 				                        	echo "<option value='$device[id]'>$device[location]</option>";
 				                        }
 										
@@ -212,7 +212,7 @@ $result = mysqli_query($con,$get_logs);
 			  		<div class="col-md-4">
 			  			
 			  			<div class="form-group">
-			  				<a href='monthly_logs.php' class="btn btn-primary pull-right"> Monthly Logs</a>
+			  				<a href='monthly_logs1.php' class="btn btn-primary pull-right"> Monthly Logs</a>
 			  			</div>			  			
 			  		</div>
 			  		

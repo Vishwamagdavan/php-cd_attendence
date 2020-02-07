@@ -12,7 +12,7 @@ if(isset($_GET['logout'])){
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Hoshitec India Dashboard</title>
+	<title>IEEE Dashboard</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
@@ -41,7 +41,7 @@ if(isset($_GET['logout'])){
 </head>
 
 <nav class="navbar navbar-light bg-dark">
-	<span class="navbar-brand mb-0 h1" style="color: white">Hoshitec India Attendance Manager</span>
+	<span class="navbar-brand mb-0 h1" style="color: white">IEEE Attendance Manager</span>
 	<form>
 
 		<div class="container-login100-form-btn" style="padding-bottom: 15px">
@@ -59,7 +59,7 @@ if(isset($_GET['logout'])){
 		  	<div class="card-header">
 		    	Monthly Logs
 		  	</div>
-		  	<form action="month.php" method="post">
+		  	<form action="month1.php" method="post">
 		 		<div class="card-body">		 		
 				  	<div class="row">
 		            	<div class="col-md-4">
@@ -226,7 +226,7 @@ if(isset($_GET['logout'])){
 						// echo $dt->format('Y-m-d');
 
 						$current_date = $dt->format("Y-m-d");
-						$emp_logs = "SELECT DeviceLogs_".$my.".LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_".$my." INNER JOIN Devices ON DeviceLogs_".$my.".DeviceId=Devices.DeviceId WHERE DeviceLogs_".$my.".DeviceId=".$current_device." AND DeviceLogs_".$my.".UserId=".$row["emp_id"]." AND date(DeviceLogs_".$my.".LogDate)='$current_date'";  //monthly active==1
+						$emp_logs = "SELECT DeviceLogs_".$my.".LogDate as log_time, Devices.DeviceLocation as device_location FROM DeviceLogs_".$my." INNER JOIN Devices ON DeviceLogs_".$my.".DeviceId=Devices.DeviceId WHERE DeviceLogs_".$my.".DeviceId=".$current_device." AND DeviceLogs_".$my.".UserId=".$row["emp_id"]." AND date(DeviceLogs_".$my.".LogDate)='$current_date'";
 
 						$emp_logs_data = mysqli_query($con,$emp_logs);
 
