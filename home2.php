@@ -73,6 +73,10 @@ $result = mysqli_query($con,$get_logs);
  {
     $header = "IEEE Attendance Manager";
  }
+ else if($_SESSION['user'] == "CDT")
+ {
+    $header = "CoredroidTech Attendance Manager";
+ }
 
 ?>
 
@@ -162,7 +166,11 @@ $result = mysqli_query($con,$get_logs);
 			                        	if($device[location] == "IEEEMadras")
 			                        	echo "<option value='$device[id]'>$device[location]</option>";
 			                        }
-									
+									else if($_SESSION['user']=="CDT")
+			                        {
+			                        	if($device[location] == "Coredroid")
+			                        	echo "<option value='$device[id]'>$device[location]</option>";
+			                        }
 								}
 								?> 
 
