@@ -134,8 +134,8 @@ $result = mysqli_query($con,$get_logs);
 		            	<div class="col-md-6">
 		                	<div class="form-group">
 		                 		<select name="device" class="form-control">
-
-									<option value='<?php echo $current_device; ?>'>-----Select Device Location-----</option>
+ 									<option value="IEEE Madras">IEEE Madras</option>
+									<!-- <option value='<?php //echo $current_device; ?>'>-----Select Device Location-----</option> -->
 									<?php 
 									$device_query=mysqli_query($con,'SELECT DeviceId as id, DeviceLocation as location FROM Devices where id="14"'); 
 									while($device=mysqli_fetch_assoc($device_query)) { 

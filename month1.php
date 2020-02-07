@@ -12,8 +12,8 @@ if(isset($_POST['sub'])){
 	 $year 		=$_POST['year'];
 	 $device=$_POST['device'];
 	 if($device==9){
-	 	$device_code=1101;
-	 	$loc="BANGALORE";
+	 	$device_code=1201;
+	 	$loc="IEEE Madras";
 	 }
 	 else{
 	 	$device_code=1102;
@@ -96,6 +96,7 @@ if(isset($_POST['sub'])){
 
 				<?php 
 
+// $query = "SELECT EmployeeName as ename , EmployeeCode as eid FROM Employees WHERE LEFT(EmployeeCode,4)=".$device_code;
 $query = "SELECT EmployeeName as ename , EmployeeCode as eid FROM Employees WHERE LEFT(EmployeeCode,4)=".$device_code;
 $result_query=mysqli_query($con,$query);
 
