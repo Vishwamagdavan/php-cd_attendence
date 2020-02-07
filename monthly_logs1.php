@@ -65,9 +65,7 @@ if(isset($_GET['logout'])){
 		            	<div class="col-md-4">
 		                	<div class="form-group">
 		                 		<select name="device" class="form-control">
-		                 			<option >Select Location</option>
-									<option value="9">BANGALORE</option>
-									<option value="11">GURGAON</option>
+									<option value="9">IEEEMadras</option>
 								</select>
 		                	</div>	                
 		              <!-- /.form-group -->

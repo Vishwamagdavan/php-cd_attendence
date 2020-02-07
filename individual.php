@@ -68,8 +68,8 @@ if(isset($_GET['logout'])){
 		                	<div class="form-group">
 		                 		<select name="device" class="form-control">
 		                 			<option >Select Location</option>
-									<option value="9">BANGALORE</option>
-									<option value="11">GURGAON</option>
+									<option value="2">BANGALORE</option>
+									<option value="1">GURGAON</option>
 								</select>
 		                	</div>	                
 		              <!-- /.form-group -->
@@ -109,7 +109,7 @@ if(isset($_GET['logout'])){
 			            			<option >Select Employee</option>
 									<?php
 
-										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status = 'Working'");
+										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status = 'Working' AND EmployeeCode LIKE '1101%' OR EmployeeCode LIKE '1102%'");
 										while($device=mysqli_fetch_assoc($device_query)) {
 											// foreach ($device as $key => $value) {
 											# code...
