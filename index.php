@@ -16,6 +16,10 @@ if(isset($_POST['login'])){
 			header("location: home1.php");
 
 		}
+		else if($_SESSION['user']=="CDT")
+		{
+			header("location: home2.php");
+		}
 		else
 		{
 			header("location: home.php");

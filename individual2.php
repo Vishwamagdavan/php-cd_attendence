@@ -60,7 +60,7 @@ if(isset($_GET['logout'])){
 		  	<div class="card-header">
 		    	Indvidual Log
 		  	</div>
-		  	<form action="individual_log1.php" method="post">
+		  	<form action="individual_log2.php" method="post">
 		 		<div class="card-body">
 		 		
 				  	<div class="row">
@@ -68,7 +68,7 @@ if(isset($_GET['logout'])){
 		                	<div class="form-group">
 		                 		<select name="device" class="form-control">
 		                 			<option >Select Location</option>
-									<option value="14">IEEE Madras</option> <!--Changed 14 for IEEE login-->
+									<option value="16">Coredroid Tech</option> <!--Changed 14 for IEEE login-->
 								</select>
 		                	</div>	                
 		              <!-- /.form-group -->
@@ -108,7 +108,7 @@ if(isset($_GET['logout'])){
 			            			<option >Select Employee</option>
 									<?php
 
-										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status='Working' AND EmployeeCode LIKE '12%' ");
+										$device_query=mysqli_query($con,"SELECT EmployeeName as name , EmployeeCode as id FROM Employees WHERE Status='Working' AND EmployeeCode LIKE '16%' ");
 										while($device=mysqli_fetch_assoc($device_query)) {
 											// foreach ($device as $key => $value) {
 											# code...

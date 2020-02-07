@@ -33,6 +33,9 @@ if(isset($_GET['date'])){
 	else if($current_device==14){
 		$device_emp_code=1201;
 	}
+	else if($current_device==16){
+		$device_emp_code=1201;
+	}
 	
 
 }
@@ -40,8 +43,8 @@ else {
 
 	$datetime = new DateTime();
 	$date = date_format($datetime, 'Y-m-d');
-	$current_device = 14;
-	$device_emp_code=1201;
+	$current_device = 16;
+	$device_emp_code=1301;
 }
 
 $my = date_format($datetime, 'n_Y');
@@ -134,7 +137,7 @@ $result = mysqli_query($con,$get_logs);
 		    	<?php echo $header ;?>
 		  	</div>
 		 	<div class="card-body">
-		 		<form action="home.php" method="get">
+		 		<form action="home1.php" method="get">
 			  	<div class="row">
 	            	<div class="col-md-6">
 	                	<div class="form-group">
@@ -211,7 +214,7 @@ $result = mysqli_query($con,$get_logs);
 			  		</div>
 			  		<div class="col-md-4">
 			  			<div class="form-group">
-			  				<a href='individual.php' class="btn btn-primary ">Individual Logs</a>
+			  				<a href='individual2.php' class="btn btn-primary ">Individual Logs</a>
 			  			</div>	
 			  						  			
 			  		</div>
@@ -242,7 +245,7 @@ $result = mysqli_query($con,$get_logs);
 
 
 
-		<form action="home.php" method="get"> 
+		<form action="home2.php" method="get"> 
 
 			<div class="wrap-input100 validate-input col-md-6" data-validate = "Date is required">
 				
