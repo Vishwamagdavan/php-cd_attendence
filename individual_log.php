@@ -179,6 +179,7 @@ if(isset($_POST['sub'])){
 					$log_date_individual=0;
 					$log_work_individual_hrs=0;
 					$log_work_individual_min=0;
+					$log_work_hrs=0;
 					$log_work_checkin=0;
 					$log_work_checkout=0;
 						$otm=0;
@@ -197,14 +198,19 @@ if(isset($_POST['sub'])){
 								$log_date_string=$arr[0];
 								$log_date_individual=substr($log_date_string, 0, 10) ;
 								$log_work_checkin=$arr[0];
-								$log_work_checkout=$arr[1];
-								$log_work_hrs=strtotime($log_work_checkout);
+								$log_work_checkout=$arr[count($arr)-1];
+								$checkin=strtotime($arr[0]);
+								$checkout=strtotime($arr[count($arr)-1]);
+								$overal=($checkout-$checkin);
+								$log_work_hrs = abs(floor($overal / 3600));
+								$log_work_min = abs(floor($overal / 60 % 60));
+
+
 								echo "<tr>";	
 								echo "<td>".$log_date_individual."</td>";				
-					echo "<td>".$sum." Hours</td>";
+					echo "<td>".$log_work_hrs." Hours.$log_work_min.Mins</td>";
 					echo "<td>".$log_work_checkin."</td>";
 					echo "<td>".$log_work_checkout."</td>";
-					echo "<td>".$log_work_hrs."</td>";
 					echo "<td>".$loc."</td>";
 					echo "</tr>";
 							}
