@@ -163,9 +163,11 @@ if(isset($_POST['sub'])){
 					
 					<th>Date</th>
 					<th>Working Hours</th>
+					<th>Overtime</th>
 					<th>Check In</th>
 					<th>Check Out</th>
 					<th>Location</th>
+					<th>Shift</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -180,6 +182,8 @@ if(isset($_POST['sub'])){
 					$log_work_individual_hrs=0;
 					$log_work_individual_min=0;
 					$log_work_hrs=0;
+					$log_otm=0;
+					$log_oth=0;
 					$log_work_checkin=0;
 					$log_work_checkout=0;
 						$otm=0;
@@ -194,7 +198,6 @@ if(isset($_POST['sub'])){
 								while($date=mysqli_fetch_array($query2_run)){
 									array_push($arr, $date['LogDate']);
 								}
-								var_dump($arr);
 								$log_date_string=$arr[0];
 								$log_date_individual=substr($log_date_string, 0, 10) ;
 								$log_work_checkin=$arr[0];
@@ -205,14 +208,26 @@ if(isset($_POST['sub'])){
 								$log_work_hrs = abs(floor($overal / 3600));
 								$log_work_min = abs(floor($overal / 60 % 60));
 
+								
+								if($log_work_hrs>=9){
+									$log_oth=($log_oth+$log_work_hrs)-9;
+									$log_otm=$log_otm+$log_work_min;
+									if($log_otm>59){
+										$log_oth++;
+										$log_otm=0;
+									}
+								}
 
 								echo "<tr>";	
 								echo "<td>".$log_date_individual."</td>";				
-					echo "<td>".$log_work_hrs." Hours.$log_work_min.Mins</td>";
+					echo "<td>".$log_work_hrs." Hours $log_work_min Mins</td>";
+					echo "<td>".$log_oth." Hours $log_otm Mins</td>";
 					echo "<td>".$log_work_checkin."</td>";
 					echo "<td>".$log_work_checkout."</td>";
 					echo "<td>".$loc."</td>";
 					echo "</tr>";
+					$log_otm=0;
+					$log_oth=0;
 							}
 						}
 						else
