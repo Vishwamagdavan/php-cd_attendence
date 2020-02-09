@@ -14,7 +14,7 @@ if(isset($_GET['logout'])){
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>IEEE Indvidual Dashboard</title>
+	<title>Coredroid Tech Indvidual Dashboard</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
@@ -42,7 +42,7 @@ if(isset($_GET['logout'])){
 
 </head>
 <nav class="navbar navbar-light bg-dark">
-	<span class="navbar-brand mb-0 h1" style="color: white">IEEE Attendance Manager</span>
+	<span class="navbar-brand mb-0 h1" style="color: white">Coredroid Tech Attendance Manager</span>
 	<form>
 
 		<div class="container-login100-form-btn" style="padding-bottom: 15px">

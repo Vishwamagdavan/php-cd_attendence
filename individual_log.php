@@ -137,6 +137,7 @@ if(isset($_POST['sub'])){
 					// echo "OVERTIME= ".$oth." ".$otm;
 					// echo "<br>";
 
+					
 					echo "<tr>";					
 					echo "<td>".$sum." Hours</td>";
 					echo "<td>".$days."</td>";
@@ -144,7 +145,86 @@ if(isset($_POST['sub'])){
 					echo "<td>".$loc."</td>";
 					echo "</tr>";
 
+					//Menu Listing 
 
+
+					
+				?>
+
+
+
+			</tbody>
+		</table>
+
+
+		<table style="width: 100%" id="logs-table" class="table table-small table-striped table-hover table-bordered">
+			<thead>
+				<tr>
+					
+					<th>Date</th>
+					<th>Working Hours</th>
+					<th>Check In</th>
+					<th>Check Out</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+
+				<?php 
+
+					$query1="SELECT DISTINCT date(date_format(`LogDate`,'%Y-%m-%d')) as uniquedays FROM DeviceLogs_".$month."_".$year." WHERE `UserId`=".$empoyee_code." AND MONTH(`LogDate`)=".$month." AND YEAR(`LogDate`)=".$year;
+					
+					$res=mysqli_query($con,$query1);
+					$log_date_individual=0;
+					$log_work_individual_hrs=0;
+					$log_work_individual_min=0;
+					$log_work_checkin=0;
+					$log_work_checkout=0;
+						$otm=0;
+						$days=0;
+						if($res==true)
+						{
+							while ($r=mysqli_fetch_array($res)) {
+								$i=0; //incrementing the value of arr
+								$arr=[];
+								$query2="SELECT * FROM DeviceLogs_".$month."_".$year." WHERE date(`LogDate`) = '".$r['uniquedays']."' AND UserId=".$empoyee_code;
+								$query2_run=mysqli_query($con,$query2);
+								while($date=mysqli_fetch_array($query2_run)){
+									array_push($arr, $date['LogDate']);
+								}
+								var_dump($arr);
+								$log_date_string=$arr[0];
+								$log_date_individual=substr($log_date_string, 0, 10) ;
+								$log_work_checkin=$arr[0];
+								$log_work_checkout=$arr[1];
+								$log_work_hrs=strtotime($log_work_checkout);
+								echo "<tr>";	
+								echo "<td>".$log_date_individual."</td>";				
+					echo "<td>".$sum." Hours</td>";
+					echo "<td>".$log_work_checkin."</td>";
+					echo "<td>".$log_work_checkout."</td>";
+					echo "<td>".$log_work_hrs."</td>";
+					echo "<td>".$loc."</td>";
+					echo "</tr>";
+							}
+						}
+						else
+						{
+							echo "No Data found!";
+						}
+					
+					// echo "<br>";
+					// echo "TOTAL HOURS=".$sum."<br>";
+					// echo "OVERTIME= ".$oth." ".$otm;
+					// echo "<br>";
+
+					
+					
+
+					//Menu Listing 
+
+					
 					
 				?>
 
